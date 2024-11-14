@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import "preline/preline";
+import {CreatePanelModal} from "./CreatePanelModal";
 function App() {
   const location = useLocation();
   const [panels, setPanels] = useState('');
   const [formData, setFormData] = useState({ version: '' });
+  const [showCreatePanelModal, setShowCreatePanelModal] = useState(false);
 
   useEffect(() => {
     fetch('http://reachhold.com:8080/panelEntities?page=0&size=100', {
@@ -18,23 +20,6 @@ function App() {
       .then(data => setPanels(data))
       .catch(er => console.log(er))
   }, [])
-
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.version]: e.target.value });
-  };
-
-  const submitForm = () => {
-    fetch('http://reachhold.com:8080/dashboard/panel?host=panel.reachhold.com&version=0.0.15&adminVersion=0.0.15&name=%D1%82%D0%B5%D1%81%D1%82&deploy=false', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Данные успешно отправлены:', data);
-      })
-      .catch(er => console.error(er));
-  };
 
   const getData = () => {
     fetch('http://reachhold.com:8080/panelEntities?page=0&size=100', {
@@ -73,44 +58,8 @@ function App() {
               <div>
                 <button type="button"
                   className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none" aria-haspopup="dialog" aria-expanded="false" aria-controls="hs-focus-management-modal"
-                  data-hs-overlay="#hs-focus-management-modal">+ Створити</button>
-                {/* Modal */}
-                <div id="hs-focus-management-modal" className="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none" role="dialog" tabIndex="-1" aria-labelledby="hs-focus-management-modal-label">
-                  <div className="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all w-[400px] m-3 sm:mx-auto">
-                    <div className="flex flex-col bg-gray-800 shadow-sm rounded-xl pointer-events-auto border border-white-10">
-                      <div className="p-4 overflow-y-auto space-y-4">
-                        <div>
-                          <label htmlFor="input-label" className="block text-sm font-medium mb-2 dark:text-black">Name</label>
-                          <input type="email" id="input-label" className="py-3 px-4 block w-full bg-gray-700 text-white border-gray-900 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:placeholder-neutral-500 dark:text-neutral-900" placeholder="placeholder" autoFocus />
-                        </div>
-                        <div>
-                          <label htmlFor="input-host" className="block text-sm font-medium mb-2 dark:text-black">Host</label>
-                          <input type="email" id="input-host" className="py-3 px-4 block w-full bg-gray-700 text-white border-gray-900 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:placeholder-neutral-500 dark:text-neutral-900" placeholder="placeholder" />
-                        </div>
-                        <div>
-                          <label htmlFor="input-version" className="block text-sm font-medium mb-2 dark:text-black">Version</label>
-
-                          <input name='version' value={formData.version} onChange={handleInputChange}
-
-                            type="email" id="input-version" className="py-3 px-4 block w-full bg-gray-700 text-white border-gray-900 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:placeholder-neutral-500 dark:text-neutral-900" placeholder="Version" />
-                        </div>
-                        <div>
-                          <label htmlFor="input-admin-version" className="block text-sm font-medium mb-2 dark:text-black">Admin Version</label>
-                          <input type="email" id="input-admin-version" className="py-3 px-4 block w-full bg-gray-700 text-white border-gray-900 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:placeholder-neutral-500 dark:text-neutral-900" placeholder="Admin Version" />
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center gap-x-2 py-3 px-4 dark:border-neutral-700">
-                        <button onClick={submitForm}
-                          type="button" className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-white-10 bg-gray-800 text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-overlay="#hs-focus-management-modal">Закрити !!!!! NO
-                        </button>
-                        <button onClick={getData}
-                          type="button" className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">Створити
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* End of the Modal */}
+                  onClick={()=>setShowCreatePanelModal(true)}>+ Створити</button>
+                  {showCreatePanelModal && <CreatePanelModal onClose={()=>setShowCreatePanelModal(false)} />}
               </div>
             </div>
           </div>
